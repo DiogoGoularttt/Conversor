@@ -1,6 +1,27 @@
 let usdInput = document.querySelector("#usd");
 let brlInput = document.querySelector("#brl");
 let dolar = 5.84;
+url =
+  "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='03-11-2025'&@dataFinalCotacao='12-31-2025'&$top=100&$format=json&$select=cotacaoCompra,dataHoraCotacao";
+
+async function fetchDollarRate() {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data)
+
+    if (data.value && data.value.length > 0) {
+      dolar = data.value[0].cotacaoCompra;
+      console.log(`Cotação atualizada: R$ ${dolar.toFixed(2)}`);
+    } else {
+      console.warn("Não foi possível obter a cotação do dólar.");
+    }
+  } catch (error) {
+    console.error("Erro ao buscar cotação do dólar:", error);
+  }
+}
+
+fetchDollarRate();
 
 usdInput.addEventListener("keyup", () => {
   convert("usd-to-brl");
@@ -11,12 +32,12 @@ brlInput.addEventListener("keyup", () => {
 });
 
 usdInput.addEventListener("blur", () => {
-  usdInput.value = formatCurrency(usdInput.value)
-})
+  usdInput.value = formatCurrency(usdInput.value);
+});
 
 brlInput.addEventListener("blur", () => {
-  brlInput.value = formatCurrency(brlInput.value)
-})
+  brlInput.value = formatCurrency(brlInput.value);
+});
 
 function formatCurrency(value) {
   let fixedValue = fixValue(value);
